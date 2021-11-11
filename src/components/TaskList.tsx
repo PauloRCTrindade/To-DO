@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { isIfStatement } from '@babel/types';
+
+const { v4: uuidv4 } = require('uuid');
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   isComplete: boolean;
 }
@@ -14,16 +17,61 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
+
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
-  }
+    // Cria uma nova task com um id random, não permita criar caso o título seja vazio.
 
-  function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
-  }
+		if (newTaskTitle)  {
+			var newTask:Task = {
+				id: uuidv4(),
+				title: newTaskTitle,
+				isComplete: false,
+			}
+			setTasks([...tasks,newTask])		
+			
+		}else{
+			alert('Não é possível adicionar um campo vazio !');
+		}
 
-  function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+	}
+
+  function handleToggleTaskCompletion(id: string) {
+    // Altera entre `true` ou `false` o campo `isComplete` de uma task com dado I;
+		const taskChecked:Task[] = tasks.filter(item => item.id === id);
+
+		let pos = tasks.indexOf(taskChecked[0]);
+		console.log(pos);
+		
+		if (taskChecked[0].isComplete == false){
+			var newTaskCheked:Task = {
+				id: taskChecked[0].id,
+				title: taskChecked[0].title,
+				isComplete: true,
+			}
+						
+  	}else{
+			var newTaskCheked:Task = {
+				id: taskChecked[0].id,
+				title: taskChecked[0].title,
+				isComplete: false,
+			}
+		}
+
+		tasks.forEach(function(item,index){
+			tasks[pos] = newTaskCheked;
+		})
+
+		 setTasks([...tasks]);
+	}	
+
+  function handleRemoveTask(id: string) {
+    // Remove uma task da listagem pelo ID
+		const taskDelete:Task[] = tasks.filter(item => item.id === id);
+		let pos = tasks.indexOf(taskDelete[0]);
+
+		tasks.splice(pos,1);
+
+		setTasks([...tasks]);
   }
 
   return (
